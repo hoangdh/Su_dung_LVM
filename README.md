@@ -109,12 +109,14 @@ Mount
 
 `mount /dev/vg-demo/lv-demo /testLV`
 
-Kiểm tra `df -h` xem đã nhận đầy đủ dung lượng và đúng thư mục hay chưa
+Dùng `df -h` để kiểm tra xem đã nhận đầy đủ dung lượng và đúng thư mục hay chưa
 
 <img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/mount_zps6i5qklyh.png" />
 
 #### 5. Thay đổi dung lượng của LV và VG trong LVM
 
 ##### a. Với LV
+
+
 
 
