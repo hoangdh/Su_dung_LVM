@@ -244,3 +244,22 @@ Cuối cùng đến PV, ta dùng lệnh:
 `pvremove /dev/sda1 /dev/sdb1 /dev/sdc1`
 
 <img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/pvremove_zpszbdj08bi.png" />
+### BONUS
+#### Đổi tên LV, VG
+
+- Đối với LV, ta dùng lệnh với cấu trúc sau:
+
+`lvrename <tên-vg> <tên-lv-cũ> <tên-lv-mới>`
+
+Ví dụ: `lvrename vg-demo lv-demo demo`
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/rename_zpszjsoxsxu.png" />
+
+- Đối với VG, ta dùng lệnh với cấu trúc sau:
+
+`lvrename <tên-vg-cũ> <tên-vg-mới>`
+
+Ví dụ: `vgrename vg-demo demo`
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/rename_vg_zpsuzdfb3of.png" />
+
