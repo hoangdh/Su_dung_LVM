@@ -257,7 +257,7 @@ Ví dụ: `lvrename vg-demo lv-demo demo`
 
 - Đối với VG, ta dùng lệnh với cấu trúc sau:
 
-`lvrename <tên-vg-cũ> <tên-vg-mới>`
+`gvrename <tên-vg-cũ> <tên-vg-mới>`
 
 Ví dụ: `vgrename vg-demo demo`
 
