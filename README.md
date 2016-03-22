@@ -113,6 +113,10 @@ Dùng `df -h` để kiểm tra xem đã nhận đầy đủ dung lượng và đ
 
 <img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/mount_zps6i5qklyh.png" />
 
+Tuy nhiên, lệnh `mount` chỉ dùng để mount LV tạm thời trong phiên làm việc sau khi khởi động lại sẽ mất muốn sử dụng lại thì phải mount. Ta ghi thêm vào file `/etc/fstab`
+
+`echo "/dev/vg-demo/lv-demo   /testLV     ext3       rw,noatime    0 0"  >> /etc/fstab`
+
 #### 5. Thay đổi dung lượng của LV và VG trong LVM
 
 ##### 5.1 Với LV
