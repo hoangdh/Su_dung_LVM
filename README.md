@@ -173,6 +173,70 @@ Và mount lại để sử dụng và kiểm tra xem đã đúng với yêu cầ
 
 <img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/mount-df_zpsyhy7xckc.png" />
 
+##### 5.2 Với VG
 
+Việc thay đổi không gian của VG đồng nghĩa với việc thêm hoặc bớt đi các PV. Ở trên, ta đã cho tất cả các PV vào trong `vg-demo`. Vì thế, ta sẽ giảm đi nó đi trước sau đó thêm lại. :D
 
+##### Giảm dung lượng:
 
+Ta kiểm tra PV nào đang ở trong `vg-demo` bằng lệnh
+
+`pvs`
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/pvs_zpsfhebt58v.png" />
+
+Bỏ `/dev/sdc1` ra khỏi `vg-demo`
+
+`vgreduce vg-demo /dev/sdc1`
+
+Và kiểm tra lại bằng:
+
+`pvs`
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/sdc1_zpscwbe8tso.png" />
+
+##### Tăng dung lượng:
+
+*Ta hiểu bản chất của việc tăng dung lượng là thêm mới một PV vào trong VG.*
+
+Bước trên, ta đã bỏ `/dev/sdc1` ra khỏi `vg-demo` thì bây giờ, chúng ta sẽ thêm nó lại vào bằng lệnh:
+
+`vgextend /dev/vg-demo /dev/sdc1`
+
+Kiểm tra lại:
+
+`pvs`
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/ex_zpswtnz2esv.png" />
+
+#### 6. Xóa LV, VG, PV
+
+Ngược lại với quá trình tạo, thay vì ta phải tạo các PV xong đến VG và cuối cùng là "phân chia" các LV thì ta phải xóa các LV, sau đó đến VG và cuối cùng là các PV. Quy trình lần lượt như sau:
+
+##### 6.1 Xóa LV
+
+Đầu tiên, ta phải `umount` nó trước sau đó xóa PV:
+
+`umount /dev/vg-demo/lv-demo`
+
+Xóa PV vừa `umount`
+
+`lvremove /dev/vg-demo/lv-demo`
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/lvremove_zpsco3ba8tv.png" />
+
+##### 6.2 Xóa VG
+
+Sau khi xóa PV xong, ta có thể xóa VG bằng lệnh:
+
+`vgremove /dev/vg-demo`
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/vgremove_zpsijgtubej.png" />
+
+##### 6.3 Xóa PV
+
+Cuối cùng đến PV, ta dùng lệnh: 
+
+`pvremove /dev/sda1 /dev/sdb1 /dev/sdc1`
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/pvremove_zpszbdj08bi.png" />
