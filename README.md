@@ -115,7 +115,63 @@ Dùng `df -h` để kiểm tra xem đã nhận đầy đủ dung lượng và đ
 
 #### 5. Thay đổi dung lượng của LV và VG trong LVM
 
-##### a. Với LV
+##### 5.1 Với LV
+
+Sau khi sử dụng một thời gian, không gian đĩa bị thu hẹp dần. Vì thế chúng ta cần tăng không gian của LV để sử dụng tiếp mà dữ liệu cũ vẫn được bảo toàn, nguyên vẹn. Làm theo hướng dẫn sau để tăng kích thước của LV.
+#####*Tăng dung lượng*
+*Kiểm tra dung lượng của VG*
+
+`vgdisplay`
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/mount_zps6i5qklyh.png" />
+
+Như ta thấy ở hình, VG còn trống ~45 GB như vậy có thể cấp phát và tạo mới các LV một cách dễ dàng như sau:
+
+`lvextend -L +1G /dev/vg-demo/lv-demo`
+
+`-L` là tùy chọn để tăng kích thước LV
+
+`+1G` định nghĩa cho hệ thống hiểu là tăng thêm, ở đây ta có thể tăng theo B (tối thiểu 512B), M, G
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/lvextend_zpszgah7qjp.png" />
+
+Lúc này, hệ thống chưa nhận được dung lượng vừa thêm cho LV, để làm được điều này chúng ta phải thực hiện câu lệnh
+
+`resize2fs /dev/vg-demo/lv-demo`
+
+Và kiểm tra lại bằng lệnh:
+
+`# dh -h`
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/resize2fs_zpsodkndkmg.png" />
+
+#####*Giảm dung lượng LV*
+
+###*Khuyến cáo*: Điều này sẽ làm mất hết dữ liệu hiện tại, bởi vậy khi *Giảm dung lượng LV*, chúng ta cần *Backup* lại toàn bộ dữ liệu hiện tại trước khi thao tác.
+
+Trước khi thực hiện tao tác giảm dung lượng LV, ta cần phải Unmount LV cần thay đổi:
+
+`umount /testLV`
+
+Sau đó, thực hiện thay đổi dung lượng bằng lệnh và xác nhận với hệ thống:
+
+`lvreduce -L 3G /dev/vg-demo/lv-demo`
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/reduce_zpsrlex6mcz.png" />
+
+Format lại LV:
+
+`mkfs.etx3 /dev/vg-demo/lv-demo`
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/formatlv_zpsnlr9c6jz.png" />
+
+Và mount lại để sử dụng và kiểm tra xem đã đúng với yêu cầu của mình chưa:
+
+`mount /dev/vg-demo/lv-demo /testLV`
+
+`df -h`
+
+<img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/mount-df_zpsyhy7xckc.png" />
 
 
 
