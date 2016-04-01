@@ -1,4 +1,6 @@
-# Hướng dẫn sử dụng LVM cơ bản
+# Hướng dẫn sử dụng LVM cơ bản và nâng cao
+
+## I. CƠ BẢN
 
 ### 1. LVM là gì?
 
@@ -17,7 +19,7 @@ LVM là kỹ thuật quản lý việc thay đổi kích thước lưu trữ c�
 <img src="https://camo.githubusercontent.com/713a3058b8a31f2686108f71d0ba494fc8317adb/687474703a2f2f692e696d6775722e636f6d2f556154617475622e706e67" />
 
 - **Hard Drives**: là những ổ cứng vật lý mới được thêm vào chưa được phân vùng hay Format để sử dụng (Ví dụ: /dev/sda)
-- - **Parittion**: là những phân vùng của Hark Drives đã được phân định sẵn kích thước. Ví dụ: sda có dung lượng 4GB, thì ta có thể chia cho phân vùng sda1 có 3GB, sda2 có 1 GB. Hiểu nôm na, sda (Hard Drives) là cha và các Partition là con. Một cha có thể có nhiều con nhưng mỗi con chỉ có thể có 1 cha.
+- **Parittion**: là những phân vùng của Hark Drives đã được phân định sẵn kích thước. Ví dụ: sda có dung lượng 4GB, thì ta có thể chia cho phân vùng sda1 có 3GB, sda2 có 1 GB. Hiểu nôm na, sda (Hard Drives) là cha và các Partition là con. Một cha có thể có nhiều con nhưng mỗi con chỉ có thể có 1 cha.
 - **Physical volumes**: là những đĩa vật lý hoặc phân vùng đĩa của bạn chẳng hạn như /dev/hda hoặc /dev/hdb1. Khi bạn muốn sử dụng chỉ cần mount vào thôi. Đối với việc sử dụng LVM chúng ta có thể kết hợp nhiều physical volumes thành volume groups
 - **Volume groups**: là một nhóm bao gồm các physycal volumes thực và dung lượng này được sử dụng để tạo ra các logical volumes, trong đó bạn có thể làm được những điều như sau : tạo, thay đổi kích thước, gỡ bỏ và sử dụng. Bạn có thể xem volume group như 1 “phân vùng ảo”
 - **Logical volumes**: là những volumes cuối cùng sau khi mount vào hệ thống của mình, bạn có thể thêm vào, gỡ bỏ và thay đổi kích thước một cách nhanh chóng. Kể từ khi chúng chứa trong các volume group bạn có thể làm cho nó lơn hơn bất kỳ physical volume đơn lẻ mà bạn muốn. (ví dụ bạn có 4 ổ đĩa mỗi ổ 5GB khi bạn kết hợp nó lại thành 1 volume group 20GB, và bạn có thể tạo ra 2 logical volumes mỗi disk 10GB)
@@ -263,4 +265,9 @@ Ví dụ: `lvrename vg-demo lv-demo demo`
 Ví dụ: `vgrename vg-demo demo`
 
 <img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/rename_vg_zpsuzdfb3of.png" />
+
+## Nâng cao
+
+### Snapshot
+
 
