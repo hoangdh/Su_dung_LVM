@@ -270,4 +270,39 @@ Ví dụ: `vgrename vg-demo demo`
 
 ### Snapshot
 
+Snapshot là một tính năng dùng để lưu lại dữ liệu tại một thời điểm nào đó.
 
+#### Tạo một snapshot
+
+Thư mục trước khi tạo snapshot:
+
+<img src="http://image.prntscr.com/image/69ae7a248c8045e88e7e6874e5fdd826.png" />
+
+Tạo một snapshot bằng câu lệnh:
+
+```
+ lvcreate -L 1GB -s -n snap-lv-accounting /dev/vg-meditech/lv-accounting
+```
+
+- `-s`: Tạo snapshot
+- `-n`: Tên của snapshot
+
+<img src="http://image.prntscr.com/image/b45e8aed379640e5a972375140d890ec.png" />
+
+*Lưu ý:* Câu lệnh trong hình tôi tạo snapshot với dung lượng là 3Gb nhưng LV mà tôi muốn snapshot chỉ có 2Gb nên hệ thống đã tự động giảm xuống.
+
+Xem thông tin của Snapshot:
+
+```
+lvdisplay /dev/vg-meditech/snap-lv-accounting
+```
+
+<img src="http://image.prntscr.com/image/4a9ef51b27964fff87c3645506940179.png" />
+
+Copy một số file:
+
+<img src="http://image.prntscr.com/image/b8bb5ed4499a498f9265936189f32b4b.png" />
+
+Kiểm tra sự thay đổi:
+
+<img src="http://image.prntscr.com/image/4958f3274546464687d0a188f08fac21.png" />
