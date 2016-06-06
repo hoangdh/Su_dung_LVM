@@ -270,6 +270,8 @@ Ví dụ: `vgrename vg-demo demo`
 
 ### Snapshot
 
+<img src="http://www.tecmint.com/wp-content/uploads/2014/08/Take-Snapshot-in-LVM.jpg" />
+
 Snapshot là một tính năng dùng để lưu lại dữ liệu tại một thời điểm nào đó.
 
 #### Tạo một snapshot
@@ -306,3 +308,187 @@ Copy một số file:
 Kiểm tra sự thay đổi:
 
 <img src="http://image.prntscr.com/image/4958f3274546464687d0a188f08fac21.png" />
+
+#### Tăng dung lượng snapshot
+
+Ở một mức nào đó, ổ cứng của chúng ta đầy lên và vượt quá dung lượng của snapshot mà chúng ta đã tạo ở bên trên. (Bên trên, tôi đã tạo snapshot bằng với dung lượng ổ cứng vì thế không phải lo nghĩ gì cả.)
+
+Để tăng thêm dung lượng của snapshot ta sẽ thực hiện như sau:
+
+```
+lvextend -L +1G /dev/vg-meditech/snap-lv-accounting
+```
+
+Muốn hệ thống tự động dãn LV snapshot cho chúng ta thì phải cấu hình một chút như sau:
+
+Đầu tiên mở file cấu hình LVM: `vi /etc/lvm/lvm.conf`
+
+Tìm đến dòng có keyword như sau:
+
+<img src="http://www.tecmint.com/wp-content/uploads/2014/08/LVM-Configuration.jpg" />
+
+Giải thích: Khi dung lượng của snapshot đạt tới 70% tổng dung lượng mà chúng ta tạo ở trên, thì tự động hệ thống sẽ tăng thêm cho nó 20% dung lượng.
+
+#### Restore lại dữ liệu tại thời điểm snapshot
+
+Để quay về trạng thái mà khi ta tạo snapshot, dùng câu lệnh sau:
+
+Trước đó, chúng ta phải umount thư mục
+
+```
+umount /accounting
+```
+
+Restore lại bằng lệnh:
+
+```
+lvconvert --merge /dev/vg-meditech/snap-lv-accounting
+```
+
+Sau khi thực hiện xong, snapshot sẽ bị xóa. Chúng ta thực hiện thao tác `mount` lại ổ vào thư mục và kiểm tra dữ liệu.
+
+```
+mount /dev/vg-meditech/lv-accounting /accounting
+```
+
+### Thin Provisioning
+
+<img src="http://www.tecmint.com/wp-content/uploads/2014/08/Setup-Thin-Provisioning-in-LVM.jpg" />
+
+Chức năng này cho phép chúng ta cấp động dữ liệu cho người dùng.
+
+Ví dụ chúng ta có một ổ cứng 15GB, cấp cho 2 người dùng mỗi người 5GB sử dụng. Một người dùng thứ 3 muốn sử dụng 5GB. Như vậy chúng ta đã hết lưu lượng khi sử dụng (Thick Volume).
+
+Cũng trong trường hợp trên, chúng ta dùng Thin Provisioning để giải quyết vấn đề này. Thin Provisioning được hiểu nôm na là "dùng bao nhiêu thì lấy từng ấy" khác với Thick Provisioning (Cấp bao nhiêu thì lấy luôn từng ấy - cách này khá lãng phí khi người dùng không dùng hết lưu lượng được cấp). Quay trở lại với Thin Provisioning, ví dụ chúng ta có 15GB như ví dụ bên trên, khi đã cấp cho 3 người dùng 5GB mà 3 người này không lưu trữ hết dung lượng được cấp thì chúng ta có thể tận dụng khoảng không gian trống đó để cấp cho người dùng thứ 4 mà không phải gắn thêm ổ mới ngay lập tức.
+
+Tuy nhiên, đây chỉ là cách "chữa cháy" tạm thời khi chúng ta chưa có khả năng mở rộng dung lượng ổ cứng vật lý tạm thời. Chúng ta phải mở rộng dung lượng vật lý càng sớm càng tốt, tránh rủi ro dữ liệu bị ghi đè, hoặc mất mát khi xung đột.
+
+#### Tạo một Thin Volume Group
+
+<img src="http://image.prntscr.com/image/2b5ce9fa1613497fad8529ce298a8938.png" >
+
+Lưu ý: Chúng ta tạo VG Thin Provisioning như tạo một VG bình thường nhưng với tùy chọn `-s` với kích cỡ mặc định là 32M
+
+```
+vgcreate -s 32M vg-thin /dev/sdc1
+```
+
+Xem lại dung lượng của Thin VG vừa tạo bằng lệnh `vgs`
+
+<img src="http://image.prntscr.com/image/012c427b74024c4da9190319b941faa7.png" >
+
+#### Tạo một LV Thin Pool từ Thin VG
+
+```
+# lvcreate -L 6G --thinpool thin-meditech vg-thin
+```
+
+<img src="http://image.prntscr.com/image/0cb644866bcf4718abe924b2e8b1dcfc.png" >
+
+Xem thông tin của LV Thin vừa tạo
+
+<img src="http://image.prntscr.com/image/4a592e7711c34ca296923e8a4c79536b.png" >
+
+#### Tạo các Thin Volume
+
+```
+lvcreate -V 2G --thin -n thin-si1 vg-thin/thin-meditech
+lvcreate -V 2G --thin -n thin-si2 vg-thin/thin-meditech
+lvcreate -V 2G --thin -n thin-si3 vg-thin/thin-meditech
+lvcreate -V 2G --thin -n thin-si4 vg-thin/thin-meditech
+```
+
+<img src="http://image.prntscr.com/image/967064587ba84d6091892bf6d48094af.png" >
+
+Xem lại thông tin của các LV vừa tạo
+
+<img src="http://image.prntscr.com/image/04e099c123fa445d886026d817c8f9c2.png" >
+
+#### Tạo thư mục, Format và Mount sử dụng
+
+Tạo thư mục, ở đây tôi sẽ tạo thư mục ở `/mmt`:
+
+```
+mkdir /mnt/si{1..4}
+```
+
+<img src="http://image.prntscr.com/image/6db260d4e28048b984500ff194e049c1.png" >
+
+Format các LV:
+
+```
+mkfs.ext3 /dev/vg-thin/thin-si1 && mkfs.ext3 /dev/vg-thin/thin-si2 && mkfs.ext3 /dev/vg-thin/thin-si3  mkfs.ext3 /dev/vg-thin/thin-si4
+```
+
+Mount lên các thư mục vừa tạo:
+
+<img src="http://image.prntscr.com/image/35069393f8ec44969f19c216ea357119.png" >
+
+```
+mount /dev/vg-thin/thin-si1 /mnt/si1
+mount /dev/vg-thin/thin-si2 /mnt/si2
+mount /dev/vg-thin/thin-si3 /mnt/si3
+mount /dev/vg-thin/thin-si4 /mnt/si4
+```
+
+Tôi vừa tạo 4 LV thin có dung lượng là 2GB với một ổ VG chỉ có 6GB. Tuy nhiên, như tôi đã nói ở trên là cách này chỉ để "chữa cháy" khi phải cấp cho một tài nguyên dùng tạm, cần phải thêm ổ cứng vật lý ngay.
+
+### Stripping IO
+
+<img src="http://www.tecmint.com/wp-content/uploads/2014/09/LVM-Striping.jpeg">
+
+Phân chia dữ liệu đồng đều trên các đĩa (PV).
+
+#### Thêm các PV
+
+Ở đây, tôi dùng 2 ổ 8GB.
+
+```
+pvcreate /dev/sd[c-d]1 -v
+pvs
+```
+
+<img src="http://image.prntscr.com/image/f39b8377f9a846eba2f8b0b18c038c2c.png">
+
+#### Tạo VG với tên vg-strip
+
+```
+vgcreate -s 16M vg-strip /dev/sd[c-d]1 -v
+vgs vg-strip
+```
+
+- `-s`: Xác định kích cỡ vật lý của VG
+- `-v`: Verbose: hiển thị thông tin làm việc của lệnh
+
+<img src="http://image.prntscr.com/image/a3616ec880ea492b946cd56a3f5bbd4c.png">
+
+#### Tạo LV xác định dung lượng và số Tripping
+
+```
+lvcreate -L 1GB -n lv-si-strip -i2 vg-strip
+```
+
+- `-L`: Kích cỡ của LV
+- `-n`: Tên của LV
+- `-i`: Số lượng Stripping
+
+<img src="http://image.prntscr.com/image/e0e90d6935be4fc891335755c3a96cc6.png" >
+
+Ở hình trên, chúng ta có thể thấy kích cỡ mặc định của strip là 64KB, chúng ta có thể thay đổi chúng bằng tùy chọn `-I`.
+
+Để xem chi tiết về LV vừa tạo ta thêm `-m` vào câu lệnh:
+
+```
+lvdisplay vg-strip/lv-si-strip -m
+```
+
+<img src="http://image.prntscr.com/image/b3d8cd6153424d599331e25743c45fd9.png" >
+
+- `1`: Số tripe
+- `2`: Kích thước mặc định của stripe
+
+Tiếp theo là format và mount lên sử dụng.
+
+### LVM Migration
+
+Tính năng này vô cùng nổi bật, chúng ta có thể di chuyển dữ liệu sang disk mới mà không mất mát dữ liệu và downtime.
