@@ -6,6 +6,7 @@
 - [2. LVM DÙNG ĐỂ LÀM GÌ? ](#1.2)
 - [3. CẤU TRÚC CỦA LVM ](#1.3)
 - [4. CẤU HÌNH CƠ BẢN ](#1.4)
+
 [II. NÂNG CAO ](#2)
 - [1. SNAPSHOT ](#2.1)
 - [2. THIN PROVISIONING](#2.2)
@@ -559,5 +560,12 @@ Kiểm tra lại thì sdc1 (8GB) đã bị xóa khỏi LV và thay vào đó sdb
 
 <img src="http://image.prntscr.com/image/97e153df7751456bb6fa75233aeb28f1.png">
 
+Ngoài Morrior, chúng ta còn một cách đơn giản hơn là `lvmove`
 
+```
+pvmove -n /dev/vg-meditech/lv-si /dev/sdb1 /dev/sdc1
+```
 
+Câu lệnh trên tôi chuyển ngược lại từ sdb1 (10GB) sang sdc1 (8GB). Và dữ liệu vẫn được an toàn.
+
+<img src="http://image.prntscr.com/image/736f71fb6c424fd79019ab684b8c9825.png" >
