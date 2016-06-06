@@ -1,11 +1,26 @@
 # Hướng dẫn sử dụng LVM cơ bản và nâng cao
 
+###Mục lục:
+[I. CƠ BẢN ](#1)
+- [1. LVM LÀ GÌ? ](#1.1)
+- [2. LVM DÙNG ĐỂ LÀM GÌ? ](#1.2)
+- [3. CẤU TRÚC CỦA LVM ](#1.3)
+- [4. CẤU HÌNH CƠ BẢN ](#1.4)
+[II. NÂNG CAO ](#2)
+- [1. SNAPSHOT ](#2.1)
+- [2. THIN PROVISIONING](#2.2)
+- [3. STRIPING I/O ](#2.3)
+- [4. LVM MIGRATION ](#2.4)
+
+<a name="1"></a>
 ## I. CƠ BẢN
 
+<a name="1.1"></a>
 ### 1. LVM là gì?
 
 LVM (Logical Volume Manager) là một phương pháp cho phép ấn định không gian đĩa cứng thành những Logical Volume khiến cho việc thay đổi kích thước trở nên dễ dàng (so với partition). Với kỹ thuật LVM bạn có thể thay đổi kích thước mà không cần phải sửa lại partition table của OS. Điều này thực sự hữu ích với những trường hợp bạn đã sử dụng hết phần bộ nhớ còn trống của partition và muốn mở rộng dung lượng của nó.
 
+<a name="1.2"></a>
 ### 2. LVM dùng để làm gì?
 
 LVM là kỹ thuật quản lý việc thay đổi kích thước lưu trữ của ổ cứng
@@ -14,6 +29,7 @@ LVM là kỹ thuật quản lý việc thay đổi kích thước lưu trữ c�
 -	Không làm hỏng dịch vụ
 -	Có thể kết hợp Hot Swapping (thao tác thay thế nóng các thành phần bên trong máy tính)
 
+<a name="1.3"></a>
 ### 3.	Cấu trúc của LVM gồm những gì?
 
 <img src="https://camo.githubusercontent.com/713a3058b8a31f2686108f71d0ba494fc8317adb/687474703a2f2f692e696d6775722e636f6d2f556154617475622e706e67" />
@@ -24,6 +40,7 @@ LVM là kỹ thuật quản lý việc thay đổi kích thước lưu trữ c�
 - **Volume groups**: là một nhóm bao gồm các physycal volumes thực và dung lượng này được sử dụng để tạo ra các logical volumes, trong đó bạn có thể làm được những điều như sau : tạo, thay đổi kích thước, gỡ bỏ và sử dụng. Bạn có thể xem volume group như 1 “phân vùng ảo”
 - **Logical volumes**: là những volumes cuối cùng sau khi mount vào hệ thống của mình, bạn có thể thêm vào, gỡ bỏ và thay đổi kích thước một cách nhanh chóng. Kể từ khi chúng chứa trong các volume group bạn có thể làm cho nó lơn hơn bất kỳ physical volume đơn lẻ mà bạn muốn. (ví dụ bạn có 4 ổ đĩa mỗi ổ 5GB khi bạn kết hợp nó lại thành 1 volume group 20GB, và bạn có thể tạo ra 2 logical volumes mỗi disk 10GB)
 
+<a name="1.4"></a>
 ### 4. Hướng dẫn LVM cơ bản
 #### 4.1 Chuẩn bị
 
@@ -266,15 +283,17 @@ Ví dụ: `vgrename vg-demo demo`
 
 <img src="http://i1363.photobucket.com/albums/r714/HoangLove9z/lvm/rename_vg_zpsuzdfb3of.png" />
 
-## Nâng cao
+<a name="2"></a>
+## II. Nâng cao
 
-### Snapshot
+<a name="2.1"></a>
+### 1. Snapshot
 
 <img src="http://www.tecmint.com/wp-content/uploads/2014/08/Take-Snapshot-in-LVM.jpg" />
 
 Snapshot là một tính năng dùng để lưu lại dữ liệu tại một thời điểm nào đó.
 
-#### Tạo một snapshot
+##### Tạo một snapshot
 
 Thư mục trước khi tạo snapshot:
 
@@ -309,7 +328,7 @@ Kiểm tra sự thay đổi:
 
 <img src="http://image.prntscr.com/image/4958f3274546464687d0a188f08fac21.png" />
 
-#### Tăng dung lượng snapshot
+##### Tăng dung lượng snapshot
 
 Ở một mức nào đó, ổ cứng của chúng ta đầy lên và vượt quá dung lượng của snapshot mà chúng ta đã tạo ở bên trên. (Bên trên, tôi đã tạo snapshot bằng với dung lượng ổ cứng vì thế không phải lo nghĩ gì cả.)
 
@@ -329,7 +348,7 @@ Tìm đến dòng có keyword như sau:
 
 Giải thích: Khi dung lượng của snapshot đạt tới 70% tổng dung lượng mà chúng ta tạo ở trên, thì tự động hệ thống sẽ tăng thêm cho nó 20% dung lượng.
 
-#### Restore lại dữ liệu tại thời điểm snapshot
+##### Restore lại dữ liệu tại thời điểm snapshot
 
 Để quay về trạng thái mà khi ta tạo snapshot, dùng câu lệnh sau:
 
@@ -350,8 +369,8 @@ Sau khi thực hiện xong, snapshot sẽ bị xóa. Chúng ta thực hiện tha
 ```
 mount /dev/vg-meditech/lv-accounting /accounting
 ```
-
-### Thin Provisioning
+<a name="2.2"></a>
+### 2. Thin Provisioning
 
 <img src="http://www.tecmint.com/wp-content/uploads/2014/08/Setup-Thin-Provisioning-in-LVM.jpg" />
 
@@ -363,7 +382,7 @@ Cũng trong trường hợp trên, chúng ta dùng Thin Provisioning để giả
 
 Tuy nhiên, đây chỉ là cách "chữa cháy" tạm thời khi chúng ta chưa có khả năng mở rộng dung lượng ổ cứng vật lý tạm thời. Chúng ta phải mở rộng dung lượng vật lý càng sớm càng tốt, tránh rủi ro dữ liệu bị ghi đè, hoặc mất mát khi xung đột.
 
-#### Tạo một Thin Volume Group
+##### Tạo một Thin Volume Group
 
 <img src="http://image.prntscr.com/image/2b5ce9fa1613497fad8529ce298a8938.png" >
 
@@ -377,7 +396,7 @@ Xem lại dung lượng của Thin VG vừa tạo bằng lệnh `vgs`
 
 <img src="http://image.prntscr.com/image/012c427b74024c4da9190319b941faa7.png" >
 
-#### Tạo một LV Thin Pool từ Thin VG
+##### Tạo một LV Thin Pool từ Thin VG
 
 ```
 # lvcreate -L 6G --thinpool thin-meditech vg-thin
@@ -389,7 +408,7 @@ Xem thông tin của LV Thin vừa tạo
 
 <img src="http://image.prntscr.com/image/4a592e7711c34ca296923e8a4c79536b.png" >
 
-#### Tạo các Thin Volume
+##### Tạo các Thin Volume
 
 ```
 lvcreate -V 2G --thin -n thin-si1 vg-thin/thin-meditech
@@ -404,7 +423,7 @@ Xem lại thông tin của các LV vừa tạo
 
 <img src="http://image.prntscr.com/image/04e099c123fa445d886026d817c8f9c2.png" >
 
-#### Tạo thư mục, Format và Mount sử dụng
+##### Tạo thư mục, Format và Mount sử dụng
 
 Tạo thư mục, ở đây tôi sẽ tạo thư mục ở `/mmt`:
 
@@ -433,13 +452,14 @@ mount /dev/vg-thin/thin-si4 /mnt/si4
 
 Tôi vừa tạo 4 LV thin có dung lượng là 2GB với một ổ VG chỉ có 6GB. Tuy nhiên, như tôi đã nói ở trên là cách này chỉ để "chữa cháy" khi phải cấp cho một tài nguyên dùng tạm, cần phải thêm ổ cứng vật lý ngay.
 
+<a name="2.3"></a>
 ### Stripping IO
 
 <img src="http://www.tecmint.com/wp-content/uploads/2014/09/LVM-Striping.jpeg">
 
 Phân chia dữ liệu đồng đều trên các đĩa (PV).
 
-#### Thêm các PV
+##### Thêm các PV
 
 Ở đây, tôi dùng 2 ổ 8GB.
 
@@ -450,7 +470,7 @@ pvs
 
 <img src="http://image.prntscr.com/image/f39b8377f9a846eba2f8b0b18c038c2c.png">
 
-#### Tạo VG với tên vg-strip
+##### Tạo VG với tên vg-strip
 
 ```
 vgcreate -s 16M vg-strip /dev/sd[c-d]1 -v
@@ -462,7 +482,7 @@ vgs vg-strip
 
 <img src="http://image.prntscr.com/image/a3616ec880ea492b946cd56a3f5bbd4c.png">
 
-#### Tạo LV xác định dung lượng và số Tripping
+##### Tạo LV xác định dung lượng và số Tripping
 
 ```
 lvcreate -L 1GB -n lv-si-strip -i2 vg-strip
@@ -489,6 +509,55 @@ lvdisplay vg-strip/lv-si-strip -m
 
 Tiếp theo là format và mount lên sử dụng.
 
+<a name="2.4"></a>
 ### LVM Migration
 
-Tính năng này vô cùng nổi bật, chúng ta có thể di chuyển dữ liệu sang disk mới mà không mất mát dữ liệu và downtime.
+Tính năng này vô cùng nổi bật và hữu ích, chúng ta có thể di chuyển dữ liệu sang disk mới mà không mất mát dữ liệu và downtime.
+
+##### Thêm ổ mới vào
+
+<img src="http://image.prntscr.com/image/063f50cb13b64c0d958f1f8b341e4f88.png">
+
+Hiện tại, tôi muốn thay sdb1 (8GB) bằng sdc1 (10GB) mà không làm mất dữ liệu hay downtime.
+
+<img src="http://image.prntscr.com/image/8f4a642e2ad3458a8ef156f0aceda250.png">
+
+Xem lại thông tin:
+
+```
+vgdisplay vg-meditech -v
+```
+
+<img src="http://image.prntscr.com/image/ae34359f4dae45f4b33c14d50792658c.png">
+
+##### Chuyển dữ liệu dùng phương thức Mirroring, sử dụng câu lệnh `lvconvert`
+
+```
+lvconvert -m 1 /dev/vg-meditech/lv-si /dev/sdb1
+```
+
+- `-m`: Mirror
+- `1`: Thêm một Morrior đơn (sdb1)
+
+<img src="http://image.prntscr.com/image/c31607f26533429db228606a9074b38f.png" >
+
+##### Tháo bỏ ổ cũ (sdc1) ra khỏi VG
+
+```
+lvconvert -m 0 /dev/vg-meditech/lv-si /dev/sdc1
+```
+
+<img src="http://image.prntscr.com/image/731fe3c874234b1485f1568900d5fc4c.png">
+
+```
+vgreduce /dev/vg-meditech /dev/sdc1
+```
+
+<img src="http://image.prntscr.com/image/c8f6bf668dcb40a2ab05b714f88d4e1a.png">
+
+Kiểm tra lại thì sdc1 (8GB) đã bị xóa khỏi LV và thay vào đó sdb1 (10GB).
+
+<img src="http://image.prntscr.com/image/97e153df7751456bb6fa75233aeb28f1.png">
+
+
+
